@@ -194,8 +194,10 @@
 
   .film-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 56px 40px;
+    grid-template-columns: repeat(4, minmax(0, 190px));
+    justify-content: space-between;
+    gap: 64px 32px;
+    align-items: start;
   }
 
   /* ===== CARD ===== */
@@ -465,12 +467,24 @@
   }
 
   /* ===== RESPONSIVE ===== */
+  @media (max-width: 980px) {
+    .film-grid {
+      grid-template-columns: repeat(3, minmax(0, 180px));
+      justify-content: space-between;
+      gap: 48px 24px;
+    }
+  }
+
   @media (max-width: 680px) {
     header { padding: 0 20px; }
     .hero { padding: 52px 20px 40px; }
     .controls { padding: 16px 20px; }
     .films-wrap { padding: 32px 20px 60px; }
-    .film-grid { grid-template-columns: repeat(2, 1fr); gap: 36px 20px; }
+    .film-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      justify-content: stretch;
+      gap: 40px 18px;
+    }
     .modal-body { padding: 24px 24px 32px; }
     .modal-title { font-size: 1.7rem; }
     .state-wrap { padding: 60px 20px; }
