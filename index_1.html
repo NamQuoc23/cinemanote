@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cinema Note</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --ink: #1a1814;
+    --ink-mid: #6b6559;
+    --ink-dim: #b0a99e;
+    --rule: #e8e3da;
+    --gold: #9a7f52;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ===== NAV ===== */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 56px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+  }
+
+  .header-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    padding: 80px 56px 64px;
+    border-bottom: 1px solid var(--rule);
+    max-width: 640px;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--ink-mid);
+  }
+
+  .hero-sub {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--ink-mid);
+    line-height: 1.75;
+  }
+
+  /* ===== CONTROLS ===== */
+  .controls {
+    padding: 20px 56px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex;
+  }
+
+  .filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    padding: 7px 16px;
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--ink-mid);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: -1px;
+  }
+
+  .filter-btn:first-child { margin-left: 0; }
+
+  .filter-btn.active {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+    z-index: 1;
+  }
+
+  .filter-btn:hover:not(.active) {
+    border-color: var(--ink-mid);
+    color: var(--ink);
+    z-index: 1;
+  }
+
+  .search-wrap {
+    flex: 1;
+    max-width: 260px;
+  }
+
+  .search-input {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 300;
+    padding: 7px 14px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input::placeholder { color: var(--ink-dim); }
+  .search-input:focus { border-color: var(--ink-mid); }
+
+  .count-label {
+    margin-left: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+
+  /* ===== GRID ===== */
+  .films-wrap { padding: 48px 56px 96px; }
+
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .section-rule-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .section-rule-line {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .film-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 56px 40px;
+  }
+
+  /* ===== CARD ===== */
+  .film-card {
+    cursor: pointer;
+    animation: riseIn 0.5s ease both;
+  }
+
+  .film-card:hover .poster-img { transform: scale(1.03); }
+  .film-card:hover .card-overlay { opacity: 1; }
+
+  .poster-frame {
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: var(--rule);
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+    display: block;
+  }
+
+  .poster-fallback {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #ede9e0 0%, #ddd8ce 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--ink-dim);
+  }
+
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26,24,20,0.5);
+    opacity: 0;
+    transition: opacity 0.25s;
+    display: flex;
+    align-items: flex-end;
+    padding: 16px;
+  }
+
+  .card-overlay-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(248,246,241,0.8);
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.25;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--ink-dim);
+    letter-spacing: 0.05em;
+    line-height: 1.7;
+  }
+
+  .card-genre {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 4px;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,24,20,0.65);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-bg.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--bg);
+    width: 100%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+
+  .modal-bg.open .modal { transform: translateY(0); }
+
+  .modal-poster {
+    width: 100%;
+    height: 260px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .modal-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+  }
+
+  .modal-poster-fallback {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #e8e3da 0%, #d4cec4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    background: rgba(248,246,241,0.92);
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+    transition: background 0.15s;
+  }
+
+  .modal-close:hover { background: var(--bg); }
+
+  .modal-body {
+    padding: 32px 40px 40px;
+  }
+
+  .modal-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+
+  .modal-director {
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--ink-mid);
+    margin-bottom: 24px;
+  }
+
+  .modal-divider {
+    height: 1px;
+    background: var(--rule);
+    margin-bottom: 24px;
+  }
+
+  .modal-review {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.85;
+    color: var(--ink-mid);
+    border-left: 2px solid var(--rule);
+    padding-left: 18px;
+  }
+
+  .modal-review-empty {
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+
+  /* ===== LOADING / EMPTY ===== */
+  .state-wrap {
+    padding: 80px 56px;
+    text-align: center;
+  }
+
+  .loading-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-dim);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .empty-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+
+  .empty-sub {
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    font-weight: 300;
+  }
+
+  .error-msg {
+    font-size: 0.82rem;
+    color: #c04040;
+    font-weight: 300;
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 680px) {
+    header { padding: 0 20px; }
+    .hero { padding: 52px 20px 40px; }
+    .controls { padding: 16px 20px; }
+    .films-wrap { padding: 32px 20px 60px; }
+    .film-grid { grid-template-columns: repeat(2, 1fr); gap: 36px 20px; }
+    .modal-body { padding: 24px 24px 32px; }
+    .modal-title { font-size: 1.7rem; }
+    .state-wrap { padding: 60px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <span class="logo">Cinema Note</span>
+  <span class="header-meta" id="headerMeta">—</span>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">Thư viện điện ảnh cá nhân</div>
+  <h1 class="hero-title">Những bộ phim<br><em>đáng nhớ</em></h1>
+  <p class="hero-sub">Tuyển chọn những bộ phim mình đã xem, phân tích và trân trọng — ghi lại không phải để nhớ, mà để hiểu.</p>
+</section>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="filter-group" id="genreFilters">
+    <button class="filter-btn active" data-genre="all" onclick="setGenre('all', this)">Tất cả</button>
+  </div>
+  <div class="search-wrap">
+    <input class="search-input" type="text" placeholder="Tìm phim, đạo diễn..." id="searchInput" oninput="renderFilms()">
+  </div>
+  <span class="count-label" id="countLabel"></span>
+</div>
+
+<!-- FILMS -->
+<div class="films-wrap">
+  <div class="section-rule">
+    <span class="section-rule-label" id="sectionLabel">Đang tải</span>
+    <div class="section-rule-line"></div>
+  </div>
+
+  <div id="stateWrap" class="state-wrap" style="display:none"></div>
+  <div class="film-grid" id="filmGrid"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg" onclick="handleBgClick(event)">
+  <div class="modal" id="modal">
+    <div style="position:relative">
+      <div id="modalPoster"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '1LbDjx4rmHLD5RO9OR0e6r9SqHxn-3Pwmqx5KNZia_ls';
+const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+
+let allFilms = [];
+let activeGenre = 'all';
+
+// ===== FETCH =====
+async function fetchFilms() {
+  showState('loading', 'Đang tải...');
+  try {
+    const res = await fetch(API_URL);
+    const text = await res.text();
+    // Google wraps JSON in /*O_o*/google.visualization.Query.setResponse(...)
+    const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    const rows = json.table.rows;
+    const cols = json.table.cols.map(c => c.label.toLowerCase().trim());
+
+    allFilms = rows.map(row => {
+      const obj = {};
+      cols.forEach((col, i) => {
+        obj[col] = row.c[i]?.v ?? '';
+      });
+      return obj;
+    }).filter(f => f.title);
+
+    buildGenreFilters();
+    renderFilms();
+    updateHeaderMeta();
+  } catch (e) {
+    showState('error', 'Không thể tải dữ liệu. Hãy kiểm tra lại cài đặt chia sẻ của Google Sheet.');
+    console.error(e);
+  }
+}
+
+// ===== GENRE FILTERS =====
+function buildGenreFilters() {
+  const genreSet = new Set();
+  allFilms.forEach(f => {
+    if (f.genre) {
+      f.genre.split(',').forEach(g => genreSet.add(g.trim()));
+    }
+  });
+  const container = document.getElementById('genreFilters');
+  genreSet.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.dataset.genre = g;
+    btn.textContent = g;
+    btn.onclick = () => setGenre(g, btn);
+    container.appendChild(btn);
+  });
+}
+
+function setGenre(genre, btn) {
+  activeGenre = genre;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFilms();
+}
+
+// ===== RENDER =====
+function renderFilms() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+
+  let filtered = allFilms.filter(f => {
+    const matchGenre = activeGenre === 'all' ||
+      (f.genre || '').split(',').map(g => g.trim()).includes(activeGenre);
+    const matchSearch = !search ||
+      (f.title || '').toLowerCase().includes(search) ||
+      (f.director || '').toLowerCase().includes(search);
+    return matchGenre && matchSearch;
+  });
+
+  document.getElementById('countLabel').textContent = filtered.length + ' phim';
+  document.getElementById('sectionLabel').textContent =
+    activeGenre === 'all' ? 'Tất cả phim · ' + filtered.length : activeGenre + ' · ' + filtered.length;
+
+  const grid = document.getElementById('filmGrid');
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    showState('empty', 'Không tìm thấy phim nào');
+    return;
+  }
+
+  hideState();
+  grid.innerHTML = filtered.map((f, i) => `
+    <div class="film-card" style="animation-delay:${Math.min(i,12)*0.04}s" onclick="openModal(${allFilms.indexOf(f)})">
+      <div class="poster-frame">
+        ${f.poster
+          ? `<img class="poster-img" src="${f.poster}" alt="${f.title}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'poster-fallback\\'>🎬</div>'">`
+          : `<div class="poster-fallback">🎬</div>`}
+        <div class="card-overlay">
+          <span class="card-overlay-text">Đọc cảm nhận</span>
+        </div>
+      </div>
+      <div class="card-title">${f.title}</div>
+      <div class="card-meta">
+        ${f.director || ''}${f.director && f.year ? ' · ' : ''}${f.year || ''}
+        ${f.runtime ? '<br>' + f.runtime : ''}
+      </div>
+      ${f.genre ? `<span class="card-genre">${f.genre.split(',')[0].trim()}</span>` : ''}
+    </div>
+  `).join('');
+}
+
+// ===== MODAL =====
+function openModal(idx) {
+  const f = allFilms[idx];
+  if (!f) return;
+
+  // Poster
+  document.getElementById('modalPoster').innerHTML = f.poster
+    ? `<img src="${f.poster}" alt="${f.title}" onerror="this.parentNode.innerHTML='<div class=\\'modal-poster-fallback\\'>🎬</div>'">`
+    : `<div class="modal-poster-fallback">🎬</div>`;
+  document.getElementById('modalPoster').className = 'modal-poster';
+
+  // Body
+  const genres = f.genre ? f.genre.split(',').map(g => `<span>${g.trim()}</span>`).join('<span style="opacity:.4"> / </span>') : '';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-eyebrow">
+      ${genres}
+      ${f.year ? `<span style="opacity:.5">·</span><span>${f.year}</span>` : ''}
+      ${f.runtime ? `<span style="opacity:.5">·</span><span>${f.runtime}</span>` : ''}
+    </div>
+    <div class="modal-title">${f.title}</div>
+    ${f.director ? `<div class="modal-director">Đạo diễn: ${f.director}</div>` : ''}
+    <div class="modal-divider"></div>
+    ${f.review
+      ? `<div class="modal-review">${f.review.replace(/\n/g, '<br>')}</div>`
+      : `<div class="modal-review-empty">Chưa có cảm nhận.</div>`}
+  `;
+
+  document.getElementById('modalBg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleBgClick(e) {
+  if (e.target === document.getElementById('modalBg')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ===== STATE =====
+function showState(type, msg) {
+  const wrap = document.getElementById('stateWrap');
+  document.getElementById('filmGrid').innerHTML = '';
+  wrap.style.display = 'block';
+  if (type === 'loading') {
+    wrap.innerHTML = `<div class="loading-text">${msg}</div>`;
+  } else if (type === 'empty') {
+    wrap.innerHTML = `<div class="empty-title">${msg}</div><p class="empty-sub">Thử tìm kiếm với từ khóa khác.</p>`;
+  } else {
+    wrap.innerHTML = `<div class="empty-title">Oops</div><p class="error-msg">${msg}</p>`;
+  }
+}
+
+function hideState() {
+  document.getElementById('stateWrap').style.display = 'none';
+}
+
+function updateHeaderMeta() {
+  document.getElementById('headerMeta').textContent = allFilms.length + ' films';
+}
+
+fetchFilms();
+</script>
+</body>
+</html>
