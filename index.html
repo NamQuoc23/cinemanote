@@ -48,7 +48,7 @@
   }
 
   .header-signature img {
-    height: 86px;
+    height: 58px;
     width: auto;
     display: block;
   }
@@ -106,10 +106,39 @@
     padding: 12px 0 0;
     display: flex;
     align-items: center;
-    gap: 16px;
-    justify-content: flex-start;
+    gap: 18px;
+    justify-content: space-between;
+    flex-wrap: wrap;
     width: min(var(--content-width), calc(100vw - (var(--page-gutter) * 2)));
     margin: 0 auto;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .filter-btn {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    background: #ffffff;
+    border: 1px solid #d9d9d9;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--ink);
+  }
+
+  .filter-btn.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #ffffff;
   }
 
   .search-wrap {
@@ -448,7 +477,7 @@
     }
 
     .header-signature img {
-      height: 72px;
+      height: 50px;
     }
 
     .film-grid {
@@ -481,7 +510,18 @@
     }
 
     .hero { padding-top: 56px; padding-bottom: 30px; }
-    .controls { padding-top: 8px; padding-bottom: 0; width: calc(100vw - (var(--page-gutter) * 2)); }
+    .controls {
+      padding-top: 8px;
+      padding-bottom: 0;
+      width: calc(100vw - (var(--page-gutter) * 2));
+      align-items: stretch;
+    }
+    .filter-group {
+      gap: 8px;
+    }
+    .filter-btn {
+      padding: 9px 12px;
+    }
     .films-wrap { padding-top: 36px; padding-bottom: 64px; }
     .film-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -506,12 +546,18 @@
 
 <!-- HERO -->
 <section class="hero">
-  <h1 class="hero-title">Những bộ phim<br><em>đáng nhớ</em></h1>
+  <h1 class="hero-title">Some films stay<br><em>longer than the story.</em></h1>
   <p class="hero-sub">Tuyển chọn những bộ phim mình đã xem, phân tích và trân trọng — ghi lại không phải để nhớ, mà để hiểu.</p>
 </section>
 
 <!-- CONTROLS -->
 <div class="controls">
+  <div class="filter-group" id="filterGroup">
+    <button class="filter-btn active" type="button" data-filter="all" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" type="button" data-filter="From Home" onclick="setFilter('From Home', this)">From Home</button>
+    <button class="filter-btn" type="button" data-filter="From the World" onclick="setFilter('From the World', this)">From the World</button>
+    <button class="filter-btn" type="button" data-filter="Notes" onclick="setFilter('Notes', this)">Notes</button>
+  </div>
   <div class="search-wrap">
     <input class="search-input" type="text" placeholder="Tìm phim, đạo diễn..." id="searchInput" oninput="renderFilms()">
   </div>
@@ -544,6 +590,7 @@ const SHEET_ID = '1LbDjx4rmHLD5RO9OR0e6r9SqHxn-3Pwmqx5KNZia_ls';
 const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
 
 let allFilms = [];
+let activeFilter = 'all';
 
 // ===== FETCH =====
 async function fetchFilms() {
@@ -573,17 +620,27 @@ async function fetchFilms() {
 }
 
 // ===== RENDER =====
+function setFilter(filter, btn) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(button => button.classList.remove('active'));
+  btn.classList.add('active');
+  renderFilms();
+}
+
 function renderFilms() {
   const search = document.getElementById('searchInput').value.toLowerCase();
 
   let filtered = allFilms.filter(f => {
+    const filmFilter = (f.filter || '').trim();
+    const matchFilter = activeFilter === 'all' || filmFilter === activeFilter;
     const matchSearch = !search ||
       (f.title || '').toLowerCase().includes(search) ||
       (f.director || '').toLowerCase().includes(search);
-    return matchSearch;
+    return matchFilter && matchSearch;
   });
 
-  document.getElementById('sectionLabel').textContent = 'Tất cả phim · ' + filtered.length;
+  const sectionPrefix = activeFilter === 'all' ? 'Tất cả phim' : activeFilter;
+  document.getElementById('sectionLabel').textContent = sectionPrefix + ' · ' + filtered.length;
 
   const grid = document.getElementById('filmGrid');
 
