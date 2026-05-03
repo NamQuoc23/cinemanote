@@ -15,7 +15,7 @@
     --rule: #000000;
     --gold: #9a7f52;
     --page-gutter: clamp(40px, 10vw, 168px);
-    --content-width: 980px;
+    --content-width: 900px;
     --mono: 'Noto Sans Mono', monospace;
   }
 
@@ -51,7 +51,7 @@
   }
 
   .header-signature img {
-    height: 54px;
+    height: 40px;
     width: auto;
     display: block;
   }
@@ -76,8 +76,9 @@
 
   /* ===== HERO ===== */
   .hero {
-    padding: 92px var(--page-gutter) 34px;
-    max-width: min(800px, calc(100vw - (var(--page-gutter) * 2)));
+    padding: 92px 0 34px;
+    width: min(var(--content-width), calc(100vw - (var(--page-gutter) * 2)));
+    margin: 0 auto;
   }
 
   .hero-title {
@@ -104,15 +105,17 @@
 
   /* ===== CONTROLS ===== */
   .controls {
-    padding: 12px var(--page-gutter) 0;
+    padding: 12px 0 0;
     display: flex;
     align-items: center;
     gap: 16px;
     justify-content: flex-start;
+    width: min(var(--content-width), calc(100vw - (var(--page-gutter) * 2)));
+    margin: 0 auto;
   }
 
   .search-wrap {
-    width: min(100%, 360px);
+    width: min(100%, 340px);
   }
 
   .search-input {
@@ -173,7 +176,7 @@
   .film-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 34px 28px;
+    gap: 52px 44px;
     align-items: start;
     max-width: var(--content-width);
     margin: 0 auto;
@@ -447,12 +450,12 @@
     }
 
     .header-signature img {
-      height: 46px;
+      height: 36px;
     }
 
     .film-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 28px 22px;
+      gap: 40px 32px;
     }
   }
 
@@ -479,11 +482,11 @@
     }
 
     .hero { padding-top: 56px; padding-bottom: 30px; }
-    .controls { padding-top: 8px; padding-bottom: 0; }
+    .controls { padding-top: 8px; padding-bottom: 0; width: calc(100vw - (var(--page-gutter) * 2)); }
     .films-wrap { padding-top: 36px; padding-bottom: 64px; }
     .film-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 26px 16px;
+      gap: 30px 22px;
     }
     .modal-body { padding: 24px 24px 32px; }
     .modal-title { font-size: 1.7rem; }
