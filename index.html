@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cinema Note</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Courier+Prime:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #ffffff;
@@ -14,6 +14,9 @@
     --ink-dim: #b0a99e;
     --rule: #e8e3da;
     --gold: #9a7f52;
+    --page-gutter: clamp(32px, 8vw, 132px);
+    --content-width: 1080px;
+    --mono: 'Noto Sans Mono', monospace;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -34,7 +37,7 @@
     background: rgba(255,255,255,0.95);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--rule);
-    padding: 0 56px;
+    padding: 0 var(--page-gutter);
     height: 60px;
     display: flex;
     align-items: center;
@@ -50,24 +53,24 @@
   }
 
   .header-meta {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--mono);
     font-size: 0.72rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     color: var(--ink-dim);
     text-transform: uppercase;
   }
 
   /* ===== HERO ===== */
   .hero {
-    padding: 80px 56px 64px;
+    padding: 88px var(--page-gutter) 72px;
     border-bottom: 1px solid var(--rule);
-    max-width: 640px;
+    max-width: min(760px, calc(100vw - (var(--page-gutter) * 2)));
   }
 
   .hero-tag {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--mono);
     font-size: 0.7rem;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     color: var(--gold);
     text-transform: uppercase;
     margin-bottom: 20px;
@@ -96,7 +99,7 @@
 
   /* ===== CONTROLS ===== */
   .controls {
-    padding: 20px 56px;
+    padding: 24px var(--page-gutter);
     border-bottom: 1px solid var(--rule);
     display: flex;
     align-items: center;
@@ -107,15 +110,16 @@
 
   .search-wrap {
     flex: 1;
-    max-width: 340px;
+    max-width: 380px;
   }
 
   .search-input {
     width: 100%;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 300;
-    padding: 9px 14px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    padding: 10px 14px;
     background: var(--surface);
     border: 1px solid var(--rule);
     color: var(--ink);
@@ -127,7 +131,7 @@
   .search-input:focus { border-color: var(--ink-mid); }
 
   .count-label {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--mono);
     font-size: 0.72rem;
     letter-spacing: 0.08em;
     color: var(--ink-dim);
@@ -135,19 +139,24 @@
   }
 
   /* ===== GRID ===== */
-  .films-wrap { padding: 48px 56px 96px; }
+  .films-wrap {
+    padding: 56px var(--page-gutter) 104px;
+  }
 
   .section-rule {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-bottom: 36px;
+    max-width: var(--content-width);
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .section-rule-label {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--mono);
     font-size: 0.68rem;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     color: var(--ink-dim);
     text-transform: uppercase;
     white-space: nowrap;
@@ -161,10 +170,11 @@
 
   .film-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 210px));
-    justify-content: space-between;
-    gap: 26px 18px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 34px 28px;
     align-items: start;
+    max-width: var(--content-width);
+    margin: 0 auto;
   }
 
   /* ===== CARD ===== */
@@ -216,16 +226,16 @@
   }
 
   .card-overlay-text {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--mono);
     font-size: 0.68rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(248,246,241,0.8);
   }
 
   .card-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.14rem;
+    font-size: 1.2rem;
     font-weight: 400;
     line-height: 1.25;
     margin-bottom: 6px;
@@ -236,7 +246,7 @@
   }
 
   .card-meta {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--mono);
     font-size: 0.72rem;
     color: var(--ink-dim);
     letter-spacing: 0.05em;
@@ -324,9 +334,9 @@
   }
 
   .modal-eyebrow {
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--mono);
     font-size: 0.72rem;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     color: var(--gold);
     text-transform: uppercase;
     margin-bottom: 10px;
@@ -426,21 +436,22 @@
   /* ===== RESPONSIVE ===== */
   @media (max-width: 980px) {
     .film-grid {
-      grid-template-columns: repeat(3, minmax(0, 195px));
-      justify-content: space-between;
-      gap: 24px 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px 22px;
     }
   }
 
   @media (max-width: 680px) {
-    header { padding: 0 20px; }
-    .hero { padding: 52px 20px 40px; }
-    .controls { padding: 16px 20px; }
-    .films-wrap { padding: 32px 20px 60px; }
+    :root {
+      --page-gutter: 20px;
+    }
+
+    .hero { padding-top: 56px; padding-bottom: 44px; }
+    .controls { padding-top: 16px; padding-bottom: 16px; }
+    .films-wrap { padding-top: 36px; padding-bottom: 64px; }
     .film-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      justify-content: stretch;
-      gap: 24px 14px;
+      gap: 26px 16px;
     }
     .modal-body { padding: 24px 24px 32px; }
     .modal-title { font-size: 1.7rem; }
@@ -572,6 +583,7 @@ function renderFilms() {
 function openModal(idx) {
   const f = allFilms[idx];
   if (!f) return;
+  const metaBits = [f.year, f.runtime].filter(Boolean);
 
   // Poster
   document.getElementById('modalPoster').innerHTML = f.poster
@@ -582,8 +594,7 @@ function openModal(idx) {
   // Body
   document.getElementById('modalBody').innerHTML = `
     <div class="modal-eyebrow">
-      ${f.year ? `<span style="opacity:.5">·</span><span>${f.year}</span>` : ''}
-      ${f.runtime ? `<span style="opacity:.5">·</span><span>${f.runtime}</span>` : ''}
+      ${metaBits.map(bit => `<span>${bit}</span>`).join('<span style="opacity:.5">·</span>')}
     </div>
     <div class="modal-title">${f.title}</div>
     ${f.director ? `<div class="modal-director">Đạo diễn: ${f.director}</div>` : ''}
