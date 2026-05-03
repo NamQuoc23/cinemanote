@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cinema Note</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Courier+Prime:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #ffffff;
@@ -50,8 +50,8 @@
   }
 
   .header-meta {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.72rem;
     letter-spacing: 0.12em;
     color: var(--ink-dim);
     text-transform: uppercase;
@@ -65,9 +65,9 @@
   }
 
   .hero-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.2em;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
     color: var(--gold);
     text-transform: uppercase;
     margin-bottom: 20px;
@@ -101,53 +101,21 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    justify-content: space-between;
     flex-wrap: wrap;
-  }
-
-  .filter-group {
-    display: flex;
-  }
-
-  .filter-btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.02em;
-    padding: 7px 16px;
-    background: transparent;
-    border: 1px solid var(--rule);
-    color: var(--ink-mid);
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-left: -1px;
-  }
-
-  .filter-btn:first-child { margin-left: 0; }
-
-  .filter-btn.active {
-    background: var(--ink);
-    color: var(--bg);
-    border-color: var(--ink);
-    z-index: 1;
-  }
-
-  .filter-btn:hover:not(.active) {
-    border-color: var(--ink-mid);
-    color: var(--ink);
-    z-index: 1;
   }
 
   .search-wrap {
     flex: 1;
-    max-width: 260px;
+    max-width: 340px;
   }
 
   .search-input {
     width: 100%;
     font-family: 'DM Sans', sans-serif;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 300;
-    padding: 7px 14px;
+    padding: 9px 14px;
     background: var(--surface);
     border: 1px solid var(--rule);
     color: var(--ink);
@@ -159,10 +127,9 @@
   .search-input:focus { border-color: var(--ink-mid); }
 
   .count-label {
-    margin-left: auto;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
     color: var(--ink-dim);
     text-transform: uppercase;
   }
@@ -178,9 +145,9 @@
   }
 
   .section-rule-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
     color: var(--ink-dim);
     text-transform: uppercase;
     white-space: nowrap;
@@ -194,9 +161,9 @@
 
   .film-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 190px));
+    grid-template-columns: repeat(4, minmax(0, 210px));
     justify-content: space-between;
-    gap: 64px 32px;
+    gap: 26px 18px;
     align-items: start;
   }
 
@@ -249,16 +216,16 @@
   }
 
   .card-overlay-text {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: rgba(248,246,241,0.8);
   }
 
   .card-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
+    font-size: 1.14rem;
     font-weight: 400;
     line-height: 1.25;
     margin-bottom: 6px;
@@ -269,21 +236,11 @@
   }
 
   .card-meta {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.72rem;
     color: var(--ink-dim);
     letter-spacing: 0.05em;
     line-height: 1.7;
-  }
-
-  .card-genre {
-    display: inline-block;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-top: 4px;
   }
 
   /* ===== MODAL ===== */
@@ -367,9 +324,9 @@
   }
 
   .modal-eyebrow {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
     color: var(--gold);
     text-transform: uppercase;
     margin-bottom: 10px;
@@ -469,9 +426,9 @@
   /* ===== RESPONSIVE ===== */
   @media (max-width: 980px) {
     .film-grid {
-      grid-template-columns: repeat(3, minmax(0, 180px));
+      grid-template-columns: repeat(3, minmax(0, 195px));
       justify-content: space-between;
-      gap: 48px 24px;
+      gap: 24px 16px;
     }
   }
 
@@ -483,7 +440,7 @@
     .film-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       justify-content: stretch;
-      gap: 40px 18px;
+      gap: 24px 14px;
     }
     .modal-body { padding: 24px 24px 32px; }
     .modal-title { font-size: 1.7rem; }
@@ -508,9 +465,6 @@
 
 <!-- CONTROLS -->
 <div class="controls">
-  <div class="filter-group" id="genreFilters">
-    <button class="filter-btn active" data-genre="all" onclick="setGenre('all', this)">Tất cả</button>
-  </div>
   <div class="search-wrap">
     <input class="search-input" type="text" placeholder="Tìm phim, đạo diễn..." id="searchInput" oninput="renderFilms()">
   </div>
@@ -544,7 +498,6 @@ const SHEET_ID = '1LbDjx4rmHLD5RO9OR0e6r9SqHxn-3Pwmqx5KNZia_ls';
 const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
 
 let allFilms = [];
-let activeGenre = 'all';
 
 // ===== FETCH =====
 async function fetchFilms() {
@@ -565,7 +518,6 @@ async function fetchFilms() {
       return obj;
     }).filter(f => f.title);
 
-    buildGenreFilters();
     renderFilms();
     updateHeaderMeta();
   } catch (e) {
@@ -574,48 +526,19 @@ async function fetchFilms() {
   }
 }
 
-// ===== GENRE FILTERS =====
-function buildGenreFilters() {
-  const genreSet = new Set();
-  allFilms.forEach(f => {
-    if (f.genre) {
-      f.genre.split(',').forEach(g => genreSet.add(g.trim()));
-    }
-  });
-  const container = document.getElementById('genreFilters');
-  genreSet.forEach(g => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn';
-    btn.dataset.genre = g;
-    btn.textContent = g;
-    btn.onclick = () => setGenre(g, btn);
-    container.appendChild(btn);
-  });
-}
-
-function setGenre(genre, btn) {
-  activeGenre = genre;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderFilms();
-}
-
 // ===== RENDER =====
 function renderFilms() {
   const search = document.getElementById('searchInput').value.toLowerCase();
 
   let filtered = allFilms.filter(f => {
-    const matchGenre = activeGenre === 'all' ||
-      (f.genre || '').split(',').map(g => g.trim()).includes(activeGenre);
     const matchSearch = !search ||
       (f.title || '').toLowerCase().includes(search) ||
       (f.director || '').toLowerCase().includes(search);
-    return matchGenre && matchSearch;
+    return matchSearch;
   });
 
   document.getElementById('countLabel').textContent = filtered.length + ' phim';
-  document.getElementById('sectionLabel').textContent =
-    activeGenre === 'all' ? 'Tất cả phim · ' + filtered.length : activeGenre + ' · ' + filtered.length;
+  document.getElementById('sectionLabel').textContent = 'Tất cả phim · ' + filtered.length;
 
   const grid = document.getElementById('filmGrid');
 
@@ -641,7 +564,6 @@ function renderFilms() {
         ${f.director || ''}${f.director && f.year ? ' · ' : ''}${f.year || ''}
         ${f.runtime ? '<br>' + f.runtime : ''}
       </div>
-      ${f.genre ? `<span class="card-genre">${f.genre.split(',')[0].trim()}</span>` : ''}
     </div>
   `).join('');
 }
@@ -658,10 +580,8 @@ function openModal(idx) {
   document.getElementById('modalPoster').className = 'modal-poster';
 
   // Body
-  const genres = f.genre ? f.genre.split(',').map(g => `<span>${g.trim()}</span>`).join('<span style="opacity:.4"> / </span>') : '';
   document.getElementById('modalBody').innerHTML = `
     <div class="modal-eyebrow">
-      ${genres}
       ${f.year ? `<span style="opacity:.5">·</span><span>${f.year}</span>` : ''}
       ${f.runtime ? `<span style="opacity:.5">·</span><span>${f.runtime}</span>` : ''}
     </div>
@@ -707,7 +627,7 @@ function hideState() {
 }
 
 function updateHeaderMeta() {
-  document.getElementById('headerMeta').textContent = allFilms.length + ' films';
+  document.getElementById('headerMeta').textContent = allFilms.length + ' phim';
 }
 
 fetchFilms();
