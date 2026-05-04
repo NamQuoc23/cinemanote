@@ -69,6 +69,13 @@
     letter-spacing: 0.06em;
     color: var(--ink);
     justify-self: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .logo:hover {
+    opacity: 0.68;
   }
 
   .header-meta {
@@ -393,6 +400,8 @@
     font-style: normal;
     line-height: 1.95;
     color: var(--ink);
+    text-align: justify;
+    text-justify: inter-word;
   }
 
   .detail-review p {
@@ -540,7 +549,7 @@
   <div class="header-signature">
     <img src="ChuKyTayNamQuoc.png" alt="Chữ ký Nam Quốc">
   </div>
-  <span class="logo">Cinema Note</span>
+  <a href="/" class="logo" onclick="goHome(event)">Cinema Note</a>
   <span class="header-meta" id="headerMeta">—</span>
 </header>
 
