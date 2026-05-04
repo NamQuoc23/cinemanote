@@ -325,22 +325,19 @@
     opacity: 0.65;
   }
 
-  .detail-layout {
-    display: grid;
-    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
-    gap: 40px;
-    align-items: start;
-  }
-
-  .detail-main {
-    min-width: 0;
+  .detail-article::after {
+    content: "";
+    display: block;
+    clear: both;
   }
 
   .detail-poster {
-    width: 100%;
+    width: min(300px, 32vw);
     aspect-ratio: 2 / 3;
     overflow: hidden;
     background: #f1f1f1;
+    float: left;
+    margin: 0 40px 24px 0;
   }
 
   .detail-poster img {
@@ -390,7 +387,6 @@
   }
 
   .detail-review {
-    grid-column: 1 / -1;
     font-family: 'DM Sans', sans-serif;
     font-size: 1rem;
     font-weight: 300;
@@ -411,12 +407,6 @@
     font-size: 0.8rem;
     color: var(--ink-dim);
     font-style: normal;
-  }
-
-  .detail-review-lead {
-    display: block;
-    margin-left: calc(min(220px, 28vw) + 40px);
-    margin-bottom: 24px;
   }
 
   /* ===== LOADING / EMPTY ===== */
@@ -488,14 +478,6 @@
       gap: 40px 32px;
     }
 
-    .detail-layout {
-      grid-template-columns: 240px minmax(0, 1fr);
-      gap: 28px;
-    }
-
-    .detail-review-lead {
-      margin-left: calc(240px + 28px);
-    }
   }
 
   @media (max-width: 680px) {
@@ -540,16 +522,11 @@
       gap: 30px 22px;
     }
     .detail-view { padding-top: 36px; padding-bottom: 64px; }
-    .detail-layout {
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
     .detail-poster {
       max-width: 320px;
-      margin: 0 auto;
-    }
-    .detail-review-lead {
-      margin-left: 0;
+      width: min(100%, 320px);
+      float: none;
+      margin: 0 auto 24px;
     }
     .detail-title { font-size: 1.7rem; }
     .state-wrap { padding: 60px 20px; }
@@ -602,10 +579,7 @@
 <section class="detail-view hidden view-shell" id="detailView">
   <div class="detail-shell">
     <a href="/" class="detail-back" onclick="goHome(event)">← Trở lại danh sách</a>
-    <div class="detail-layout">
-      <div id="detailPoster" class="detail-poster"></div>
-      <div id="detailBody"></div>
-    </div>
+    <div id="detailBody"></div>
   </div>
 </section>
 
@@ -796,36 +770,32 @@ function renderDetailPage(film) {
   document.getElementById('detailView').classList.remove('hidden');
   document.title = `${film.title} • Cinema Note`;
 
-  document.getElementById('detailPoster').innerHTML = film.poster
-    ? `<img src="${film.poster}" alt="${film.title}" onerror="this.parentNode.innerHTML='<div class=\\'detail-poster-fallback\\'>🎬</div>'">`
-    : `<div class="detail-poster-fallback">🎬</div>`;
-
   document.getElementById('detailBody').innerHTML = `
-    <div class="detail-main">
+    <article class="detail-article">
+      <div class="detail-poster">
+        ${film.poster
+          ? `<img src="${film.poster}" alt="${film.title}" onerror="this.parentNode.innerHTML='<div class=\\'detail-poster-fallback\\'>🎬</div>'">`
+          : `<div class="detail-poster-fallback">🎬</div>`}
+      </div>
       <div class="detail-meta">
         ${metaBits.map(bit => `<span>${bit}</span>`).join('<span style="opacity:.5">·</span>')}
       </div>
       <div class="detail-title">${film.title}</div>
       ${film.director ? `<div class="detail-director">Đạo diễn: ${film.director}</div>` : ''}
-    </div>
-    ${film.review
-      ? `<div class="detail-review">${formatReview(film.review)}</div>`
-      : `<div class="detail-review-empty">Chưa có cảm nhận.</div>`}
+      ${film.review
+        ? `<div class="detail-review">${formatReview(film.review)}</div>`
+        : `<div class="detail-review-empty">Chưa có cảm nhận.</div>`}
+    </article>
   `;
 }
 
 function formatReview(review) {
-  const paragraphs = String(review)
+  return String(review)
     .split(/\n\s*\n/)
     .map(paragraph => paragraph.trim())
-    .filter(Boolean);
-
-  if (paragraphs.length === 0) return '';
-
-  const [lead, ...rest] = paragraphs;
-  const leadHtml = `<span class="detail-review-lead">${lead.replace(/\n/g, '<br>')}</span>`;
-  const restHtml = rest.map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('');
-  return leadHtml + restHtml;
+    .filter(Boolean)
+    .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+    .join('');
 }
 
 window.addEventListener('popstate', renderRoute);
