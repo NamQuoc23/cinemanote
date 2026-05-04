@@ -332,6 +332,10 @@
     align-items: start;
   }
 
+  .detail-main {
+    min-width: 0;
+  }
+
   .detail-poster {
     width: 100%;
     aspect-ratio: 2 / 3;
@@ -385,27 +389,34 @@
     margin-bottom: 24px;
   }
 
-  .detail-divider {
-    height: 1px;
-    background: #d9d9d9;
-    margin-bottom: 24px;
+  .detail-review {
+    grid-column: 1 / -1;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 300;
+    font-style: normal;
+    line-height: 1.95;
+    color: var(--ink);
   }
 
-  .detail-review {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.18rem;
-    font-weight: 300;
-    font-style: italic;
-    line-height: 1.85;
-    color: var(--ink-mid);
-    border-left: 2px solid var(--rule);
-    padding-left: 18px;
+  .detail-review p {
+    margin: 0 0 22px;
+  }
+
+  .detail-review p:last-child {
+    margin-bottom: 0;
   }
 
   .detail-review-empty {
     font-size: 0.8rem;
     color: var(--ink-dim);
-    font-style: italic;
+    font-style: normal;
+  }
+
+  .detail-review-lead {
+    display: block;
+    margin-left: calc(min(220px, 28vw) + 40px);
+    margin-bottom: 24px;
   }
 
   /* ===== LOADING / EMPTY ===== */
@@ -481,6 +492,10 @@
       grid-template-columns: 240px minmax(0, 1fr);
       gap: 28px;
     }
+
+    .detail-review-lead {
+      margin-left: calc(240px + 28px);
+    }
   }
 
   @media (max-width: 680px) {
@@ -532,6 +547,9 @@
     .detail-poster {
       max-width: 320px;
       margin: 0 auto;
+    }
+    .detail-review-lead {
+      margin-left: 0;
     }
     .detail-title { font-size: 1.7rem; }
     .state-wrap { padding: 60px 20px; }
@@ -783,16 +801,31 @@ function renderDetailPage(film) {
     : `<div class="detail-poster-fallback">🎬</div>`;
 
   document.getElementById('detailBody').innerHTML = `
-    <div class="detail-meta">
-      ${metaBits.map(bit => `<span>${bit}</span>`).join('<span style="opacity:.5">·</span>')}
+    <div class="detail-main">
+      <div class="detail-meta">
+        ${metaBits.map(bit => `<span>${bit}</span>`).join('<span style="opacity:.5">·</span>')}
+      </div>
+      <div class="detail-title">${film.title}</div>
+      ${film.director ? `<div class="detail-director">Đạo diễn: ${film.director}</div>` : ''}
     </div>
-    <div class="detail-title">${film.title}</div>
-    ${film.director ? `<div class="detail-director">Đạo diễn: ${film.director}</div>` : ''}
-    <div class="detail-divider"></div>
     ${film.review
-      ? `<div class="detail-review">${film.review.replace(/\n/g, '<br>')}</div>`
+      ? `<div class="detail-review">${formatReview(film.review)}</div>`
       : `<div class="detail-review-empty">Chưa có cảm nhận.</div>`}
   `;
+}
+
+function formatReview(review) {
+  const paragraphs = String(review)
+    .split(/\n\s*\n/)
+    .map(paragraph => paragraph.trim())
+    .filter(Boolean);
+
+  if (paragraphs.length === 0) return '';
+
+  const [lead, ...rest] = paragraphs;
+  const leadHtml = `<span class="detail-review-lead">${lead.replace(/\n/g, '<br>')}</span>`;
+  const restHtml = rest.map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('');
+  return leadHtml + restHtml;
 }
 
 window.addEventListener('popstate', renderRoute);
