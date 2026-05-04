@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cinema Note</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&family=Noto+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #ffffff;
@@ -16,7 +16,7 @@
     --gold: #9a7f52;
     --page-gutter: clamp(40px, 10vw, 168px);
     --content-width: 900px;
-    --mono: 'Noto Sans Mono', monospace;
+    --mono: 'IBM Plex Sans', sans-serif;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -41,7 +41,6 @@
   /* ===== NAV ===== */
   header {
     background: #ffffff;
-    border-bottom: 1px solid var(--rule);
     padding: 0 var(--page-gutter);
     height: 96px;
     display: grid;
@@ -412,6 +411,19 @@
     margin-bottom: 0;
   }
 
+  .detail-review-image {
+    display: block;
+    width: min(100%, 720px);
+    margin: 30px auto;
+    background: #ffffff;
+  }
+
+  .detail-review-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
   .detail-review-empty {
     font-size: 0.8rem;
     color: var(--ink-dim);
@@ -495,21 +507,29 @@
     }
 
     header {
-      grid-template-columns: 1fr;
-      justify-items: center;
-      gap: 10px;
-      height: auto;
-      padding-top: 16px;
-      padding-bottom: 16px;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 16px;
+      height: 78px;
+      padding-top: 0;
+      padding-bottom: 0;
     }
 
     .header-signature {
-      justify-self: center;
+      justify-self: start;
+    }
+
+    .header-signature img {
+      height: 42px;
+    }
+
+    .logo {
+      justify-self: end;
+      font-size: 1.2rem;
     }
 
     .header-meta {
       display: none;
-      justify-self: center;
     }
 
     .hero { padding-top: 56px; padding-bottom: 30px; }
@@ -801,9 +821,16 @@ function renderDetailPage(film) {
 function formatReview(review) {
   return String(review)
     .split(/\n\s*\n/)
-    .map(paragraph => paragraph.trim())
+    .map(block => block.trim())
     .filter(Boolean)
-    .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+    .map(block => {
+      const imageMatch = block.match(/^\[image:\s*(https?:\/\/[^\s\]]+)\s*\]$/i);
+      if (imageMatch) {
+        const url = imageMatch[1];
+        return `<figure class="detail-review-image"><img src="${url}" alt="Hình minh họa trong bài viết" loading="lazy"></figure>`;
+      }
+      return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+    })
     .join('');
 }
 
