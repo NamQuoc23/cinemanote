@@ -285,100 +285,76 @@
     line-height: 1.7;
   }
 
-  /* ===== MODAL ===== */
-  .modal-bg {
-    position: fixed;
-    inset: 0;
-    background: rgba(26,24,20,0.65);
-    backdrop-filter: blur(6px);
-    z-index: 100;
-    display: flex;
+  /* ===== DETAIL ===== */
+  .hidden {
+    display: none !important;
+  }
+
+  .detail-view {
+    padding: 42px var(--page-gutter) 104px;
+  }
+
+  .detail-shell {
+    width: min(var(--content-width), calc(100vw - (var(--page-gutter) * 2)));
+    margin: 0 auto;
+  }
+
+  .detail-back {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 24px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    margin-bottom: 32px;
   }
 
-  .modal-bg.open {
-    opacity: 1;
-    pointer-events: all;
+  .detail-back:hover {
+    opacity: 0.65;
   }
 
-  .modal {
-    background: var(--bg);
+  .detail-poster {
     width: 100%;
-    max-width: 620px;
-    max-height: 90vh;
-    overflow-y: auto;
-    transform: translateY(20px);
-    transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
-  }
-
-  .modal-bg.open .modal { transform: translateY(0); }
-
-  .modal-poster {
-    width: 100%;
-    height: 260px;
+    aspect-ratio: 16 / 8.5;
     overflow: hidden;
-    position: relative;
+    background: #f1f1f1;
+    margin-bottom: 32px;
   }
 
-  .modal-poster img {
+  .detail-poster img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 15%;
+    object-position: center 18%;
+    display: block;
   }
 
-  .modal-poster-fallback {
+  .detail-poster-fallback {
     width: 100%;
     height: 100%;
-    background: linear-gradient(160deg, #e8e3da 0%, #d4cec4 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 5rem;
+    color: var(--ink-dim);
   }
 
-  .modal-close {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    width: 32px;
-    height: 32px;
-    background: rgba(248,246,241,0.92);
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
+  .detail-meta {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--ink);
-    transition: background 0.15s;
-  }
-
-  .modal-close:hover { background: var(--bg); }
-
-  .modal-body {
-    padding: 32px 40px 40px;
-  }
-
-  .modal-eyebrow {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
     font-family: var(--mono);
     font-size: 0.72rem;
     letter-spacing: 0.1em;
-    color: var(--ink-mid);
     text-transform: uppercase;
-    margin-bottom: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
+    color: var(--ink-mid);
   }
 
-  .modal-title {
+  .detail-title {
     font-family: 'Cormorant Garamond', serif;
     font-size: 2.2rem;
     font-weight: 400;
@@ -386,20 +362,20 @@
     margin-bottom: 6px;
   }
 
-  .modal-director {
+  .detail-director {
     font-size: 0.82rem;
     font-weight: 300;
     color: var(--ink-mid);
     margin-bottom: 24px;
   }
 
-  .modal-divider {
+  .detail-divider {
     height: 1px;
     background: #d9d9d9;
     margin-bottom: 24px;
   }
 
-  .modal-review {
+  .detail-review {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.15rem;
     font-weight: 300;
@@ -410,7 +386,7 @@
     padding-left: 18px;
   }
 
-  .modal-review-empty {
+  .detail-review-empty {
     font-size: 0.8rem;
     color: var(--ink-dim);
     font-style: italic;
@@ -527,8 +503,8 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 30px 22px;
     }
-    .modal-body { padding: 24px 24px 32px; }
-    .modal-title { font-size: 1.7rem; }
+    .detail-view { padding-top: 36px; padding-bottom: 64px; }
+    .detail-title { font-size: 1.7rem; }
     .state-wrap { padding: 60px 20px; }
   }
 </style>
@@ -544,46 +520,45 @@
   <span class="header-meta" id="headerMeta">—</span>
 </header>
 
-<!-- HERO -->
-<section class="hero">
-  <h1 class="hero-title">Some films stay<br><em>longer than the story.</em></h1>
-  <p class="hero-sub">Tuyển chọn những bộ phim mình đã xem, phân tích và trân trọng — ghi lại không phải để nhớ, mà để hiểu.</p>
-</section>
+<main id="homeView">
+  <!-- HERO -->
+  <section class="hero">
+    <h1 class="hero-title">Some films stay<br><em>longer than the story.</em></h1>
+    <p class="hero-sub">Tuyển chọn những bộ phim mình đã xem, phân tích và trân trọng — ghi lại không phải để nhớ, mà để hiểu.</p>
+  </section>
 
-<!-- CONTROLS -->
-<div class="controls">
-  <div class="filter-group" id="filterGroup">
-    <button class="filter-btn active" type="button" data-filter="all" onclick="setFilter('all', this)">All</button>
-    <button class="filter-btn" type="button" data-filter="From Home" onclick="setFilter('From Home', this)">From Home</button>
-    <button class="filter-btn" type="button" data-filter="From the World" onclick="setFilter('From the World', this)">From the World</button>
-    <button class="filter-btn" type="button" data-filter="Notes" onclick="setFilter('Notes', this)">Notes</button>
-  </div>
-  <div class="search-wrap">
-    <input class="search-input" type="text" placeholder="Tìm phim, đạo diễn..." id="searchInput" oninput="renderFilms()">
-  </div>
-</div>
-
-<!-- FILMS -->
-<div class="films-wrap">
-  <div class="section-rule">
-    <span class="section-rule-label" id="sectionLabel">Đang tải</span>
-    <div class="section-rule-line"></div>
-  </div>
-
-  <div id="stateWrap" class="state-wrap" style="display:none"></div>
-  <div class="film-grid" id="filmGrid"></div>
-</div>
-
-<!-- MODAL -->
-<div class="modal-bg" id="modalBg" onclick="handleBgClick(event)">
-  <div class="modal" id="modal">
-    <div style="position:relative">
-      <div id="modalPoster"></div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="filter-group" id="filterGroup">
+      <button class="filter-btn active" type="button" data-filter="all" onclick="setFilter('all', this)">All</button>
+      <button class="filter-btn" type="button" data-filter="From Home" onclick="setFilter('From Home', this)">From Home</button>
+      <button class="filter-btn" type="button" data-filter="From the World" onclick="setFilter('From the World', this)">From the World</button>
+      <button class="filter-btn" type="button" data-filter="Notes" onclick="setFilter('Notes', this)">Notes</button>
     </div>
-    <div class="modal-body" id="modalBody"></div>
+    <div class="search-wrap">
+      <input class="search-input" type="text" placeholder="Tìm phim, đạo diễn..." id="searchInput" oninput="renderFilms()">
+    </div>
   </div>
-</div>
+
+  <!-- FILMS -->
+  <div class="films-wrap">
+    <div class="section-rule">
+      <span class="section-rule-label" id="sectionLabel">Đang tải</span>
+      <div class="section-rule-line"></div>
+    </div>
+
+    <div id="stateWrap" class="state-wrap" style="display:none"></div>
+    <div class="film-grid" id="filmGrid"></div>
+  </div>
+</main>
+
+<section class="detail-view hidden" id="detailView">
+  <div class="detail-shell">
+    <a href="/" class="detail-back" onclick="goHome(event)">← Trở lại danh sách</a>
+    <div id="detailPoster" class="detail-poster"></div>
+    <div id="detailBody"></div>
+  </div>
+</section>
 
 <script>
 const SHEET_ID = '1LbDjx4rmHLD5RO9OR0e6r9SqHxn-3Pwmqx5KNZia_ls';
@@ -608,11 +583,18 @@ async function fetchFilms() {
       cols.forEach((col, i) => {
         obj[col] = row.c[i]?.v ?? '';
       });
+      obj._slug = slugify(obj.title || '', allFilms.length);
       return obj;
     }).filter(f => f.title);
 
-    renderFilms();
+    allFilms = allFilms.map((film, index) => ({
+      ...film,
+      _slug: slugify(film.title || '', index)
+    }));
+
     updateHeaderMeta();
+    syncFilterButtons();
+    renderRoute();
   } catch (e) {
     showState('error', 'Không thể tải dữ liệu. Hãy kiểm tra lại cài đặt chia sẻ của Google Sheet.');
     console.error(e);
@@ -620,10 +602,58 @@ async function fetchFilms() {
 }
 
 // ===== RENDER =====
+function slugify(text, index) {
+  const base = String(text)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return `${base || 'film'}-${index + 1}`;
+}
+
+function getFilmFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('film');
+}
+
+function getFilmBySlug(slug) {
+  return allFilms.find(film => film._slug === slug);
+}
+
+function syncFilterButtons() {
+  document.querySelectorAll('.filter-btn').forEach(button => {
+    button.classList.toggle('active', button.dataset.filter === activeFilter);
+  });
+}
+
 function setFilter(filter, btn) {
   activeFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(button => button.classList.remove('active'));
   btn.classList.add('active');
+  renderFilms();
+}
+
+function renderRoute() {
+  const slug = getFilmFromUrl();
+  const film = slug ? getFilmBySlug(slug) : null;
+
+  if (slug && film) {
+    renderDetailPage(film);
+    return;
+  }
+
+  if (slug && !film) {
+    history.replaceState({}, '', window.location.pathname);
+  }
+
+  renderHomePage();
+}
+
+function renderHomePage() {
+  document.getElementById('homeView').classList.remove('hidden');
+  document.getElementById('detailView').classList.add('hidden');
+  document.title = 'Cinema Note';
   renderFilms();
 }
 
@@ -652,7 +682,7 @@ function renderFilms() {
 
   hideState();
   grid.innerHTML = filtered.map((f, i) => `
-    <div class="film-card" style="animation-delay:${Math.min(i,12)*0.04}s" onclick="openModal(${allFilms.indexOf(f)})">
+    <div class="film-card" style="animation-delay:${Math.min(i,12)*0.04}s" onclick="openFilm('${f._slug}')">
       <div class="poster-frame">
         ${f.poster
           ? `<img class="poster-img" src="${f.poster}" alt="${f.title}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'poster-fallback\\'>🎬</div>'">`
@@ -670,45 +700,43 @@ function renderFilms() {
   `).join('');
 }
 
-// ===== MODAL =====
-function openModal(idx) {
-  const f = allFilms[idx];
-  if (!f) return;
-  const metaBits = [f.year, f.runtime].filter(Boolean);
+function openFilm(slug) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('film', slug);
+  history.pushState({}, '', url);
+  renderRoute();
+}
 
-  // Poster
-  document.getElementById('modalPoster').innerHTML = f.poster
-    ? `<img src="${f.poster}" alt="${f.title}" onerror="this.parentNode.innerHTML='<div class=\\'modal-poster-fallback\\'>🎬</div>'">`
-    : `<div class="modal-poster-fallback">🎬</div>`;
-  document.getElementById('modalPoster').className = 'modal-poster';
+function goHome(event) {
+  if (event) event.preventDefault();
+  history.pushState({}, '', window.location.pathname);
+  renderRoute();
+}
 
-  // Body
-  document.getElementById('modalBody').innerHTML = `
-    <div class="modal-eyebrow">
+function renderDetailPage(film) {
+  const metaBits = [film.year, film.runtime].filter(Boolean);
+  document.getElementById('homeView').classList.add('hidden');
+  document.getElementById('detailView').classList.remove('hidden');
+  document.title = `${film.title} • Cinema Note`;
+
+  document.getElementById('detailPoster').innerHTML = film.poster
+    ? `<img src="${film.poster}" alt="${film.title}" onerror="this.parentNode.innerHTML='<div class=\\'detail-poster-fallback\\'>🎬</div>'">`
+    : `<div class="detail-poster-fallback">🎬</div>`;
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-meta">
       ${metaBits.map(bit => `<span>${bit}</span>`).join('<span style="opacity:.5">·</span>')}
     </div>
-    <div class="modal-title">${f.title}</div>
-    ${f.director ? `<div class="modal-director">Đạo diễn: ${f.director}</div>` : ''}
-    <div class="modal-divider"></div>
-    ${f.review
-      ? `<div class="modal-review">${f.review.replace(/\n/g, '<br>')}</div>`
-      : `<div class="modal-review-empty">Chưa có cảm nhận.</div>`}
+    <div class="detail-title">${film.title}</div>
+    ${film.director ? `<div class="detail-director">Đạo diễn: ${film.director}</div>` : ''}
+    <div class="detail-divider"></div>
+    ${film.review
+      ? `<div class="detail-review">${film.review.replace(/\n/g, '<br>')}</div>`
+      : `<div class="detail-review-empty">Chưa có cảm nhận.</div>`}
   `;
-
-  document.getElementById('modalBg').classList.add('open');
-  document.body.style.overflow = 'hidden';
 }
 
-function closeModal() {
-  document.getElementById('modalBg').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function handleBgClick(e) {
-  if (e.target === document.getElementById('modalBg')) closeModal();
-}
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+window.addEventListener('popstate', renderRoute);
 
 // ===== STATE =====
 function showState(type, msg) {
