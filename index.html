@@ -29,6 +29,15 @@
     min-height: 100vh;
   }
 
+  .view-shell {
+    transition: opacity 0.28s ease, transform 0.28s ease;
+  }
+
+  .view-shell.is-transitioning {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
   /* ===== NAV ===== */
   header {
     background: #ffffff;
@@ -316,20 +325,27 @@
     opacity: 0.65;
   }
 
+  .detail-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+
   .detail-poster {
     width: 100%;
-    aspect-ratio: 16 / 8.5;
+    aspect-ratio: 2 / 3;
     overflow: hidden;
     background: #f1f1f1;
-    margin-bottom: 32px;
   }
 
   .detail-poster img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center 18%;
+    object-fit: contain;
+    object-position: center center;
     display: block;
+    background: #ffffff;
   }
 
   .detail-poster-fallback {
@@ -346,7 +362,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     font-family: var(--mono);
     font-size: 0.72rem;
     letter-spacing: 0.1em;
@@ -356,10 +372,10 @@
 
   .detail-title {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 2.2rem;
+    font-size: clamp(2rem, 4vw, 2.8rem);
     font-weight: 400;
     line-height: 1.1;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
   }
 
   .detail-director {
@@ -377,7 +393,7 @@
 
   .detail-review {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.15rem;
+    font-size: 1.18rem;
     font-weight: 300;
     font-style: italic;
     line-height: 1.85;
@@ -460,6 +476,11 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 40px 32px;
     }
+
+    .detail-layout {
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 28px;
+    }
   }
 
   @media (max-width: 680px) {
@@ -504,6 +525,14 @@
       gap: 30px 22px;
     }
     .detail-view { padding-top: 36px; padding-bottom: 64px; }
+    .detail-layout {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .detail-poster {
+      max-width: 320px;
+      margin: 0 auto;
+    }
     .detail-title { font-size: 1.7rem; }
     .state-wrap { padding: 60px 20px; }
   }
@@ -520,7 +549,7 @@
   <span class="header-meta" id="headerMeta">—</span>
 </header>
 
-<main id="homeView">
+<main id="homeView" class="view-shell">
   <!-- HERO -->
   <section class="hero">
     <h1 class="hero-title">Some films stay<br><em>longer than the story.</em></h1>
@@ -552,11 +581,13 @@
   </div>
 </main>
 
-<section class="detail-view hidden" id="detailView">
+<section class="detail-view hidden view-shell" id="detailView">
   <div class="detail-shell">
     <a href="/" class="detail-back" onclick="goHome(event)">← Trở lại danh sách</a>
-    <div id="detailPoster" class="detail-poster"></div>
-    <div id="detailBody"></div>
+    <div class="detail-layout">
+      <div id="detailPoster" class="detail-poster"></div>
+      <div id="detailBody"></div>
+    </div>
   </div>
 </section>
 
@@ -566,6 +597,7 @@ const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=
 
 let allFilms = [];
 let activeFilter = 'all';
+let isTransitioningView = false;
 
 // ===== FETCH =====
 async function fetchFilms() {
@@ -635,11 +667,12 @@ function setFilter(filter, btn) {
 }
 
 function renderRoute() {
+  if (isTransitioningView) return;
   const slug = getFilmFromUrl();
   const film = slug ? getFilmBySlug(slug) : null;
 
   if (slug && film) {
-    renderDetailPage(film);
+    switchView(() => renderDetailPage(film));
     return;
   }
 
@@ -647,7 +680,7 @@ function renderRoute() {
     history.replaceState({}, '', window.location.pathname);
   }
 
-  renderHomePage();
+  switchView(renderHomePage);
 }
 
 function renderHomePage() {
@@ -711,6 +744,32 @@ function goHome(event) {
   if (event) event.preventDefault();
   history.pushState({}, '', window.location.pathname);
   renderRoute();
+}
+
+function getVisibleView() {
+  return document.getElementById('homeView').classList.contains('hidden')
+    ? document.getElementById('detailView')
+    : document.getElementById('homeView');
+}
+
+function switchView(renderNext) {
+  const currentView = getVisibleView();
+  isTransitioningView = true;
+  currentView.classList.add('is-transitioning');
+
+  window.setTimeout(() => {
+    renderNext();
+    const nextView = getVisibleView();
+    nextView.classList.add('is-transitioning');
+
+    requestAnimationFrame(() => {
+      nextView.classList.remove('is-transitioning');
+      window.setTimeout(() => {
+        currentView.classList.remove('is-transitioning');
+        isTransitioningView = false;
+      }, 280);
+    });
+  }, 180);
 }
 
 function renderDetailPage(film) {
