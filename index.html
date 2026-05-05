@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cinema Note</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MCGTDW2WCW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-MCGTDW2WCW', { send_page_view: true });
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -615,10 +623,15 @@
 <script>
 const SHEET_ID = '1LbDjx4rmHLD5RO9OR0e6r9SqHxn-3Pwmqx5KNZia_ls';
 const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+const GA_MEASUREMENT_ID = 'G-MCGTDW2WCW';
 
 let allFilms = [];
 let activeFilter = 'all';
 let isTransitioningView = false;
+let lastTrackedPath = '';
+let currentReviewSlug = null;
+let currentReviewTitle = '';
+let currentReviewEnterAt = 0;
 
 // ===== FETCH =====
 async function fetchFilms() {
@@ -705,10 +718,12 @@ function renderRoute() {
 }
 
 function renderHomePage() {
+  endReviewSession('return_home');
   document.getElementById('homeView').classList.remove('hidden');
   document.getElementById('detailView').classList.add('hidden');
   document.title = 'Cinema Note';
   renderFilms();
+  trackVirtualPageView('/', 'Cinema Note');
 }
 
 function renderFilms() {
@@ -755,9 +770,11 @@ function renderFilms() {
 }
 
 function openFilm(slug) {
+  const film = getFilmBySlug(slug);
   const url = new URL(window.location.href);
   url.searchParams.set('film', slug);
   history.pushState({}, '', url);
+  trackPosterClick(film);
   renderRoute();
 }
 
@@ -794,6 +811,10 @@ function switchView(renderNext) {
 }
 
 function renderDetailPage(film) {
+  if (currentReviewSlug && currentReviewSlug !== film._slug) {
+    endReviewSession('switch_film');
+  }
+
   const metaBits = [film.year, film.runtime].filter(Boolean);
   document.getElementById('homeView').classList.add('hidden');
   document.getElementById('detailView').classList.remove('hidden');
@@ -816,6 +837,9 @@ function renderDetailPage(film) {
         : `<div class="detail-review-empty">Chưa có cảm nhận.</div>`}
     </article>
   `;
+
+  trackVirtualPageView(`/?film=${film._slug}`, `${film.title} • Cinema Note`);
+  startReviewSession(film);
 }
 
 function formatReview(review) {
@@ -857,6 +881,76 @@ function hideState() {
 function updateHeaderMeta() {
   document.getElementById('headerMeta').textContent = allFilms.length + ' phim';
 }
+
+function trackVirtualPageView(path, title) {
+  if (typeof window.gtag !== 'function') return;
+  if (lastTrackedPath === path) return;
+  lastTrackedPath = path;
+  window.gtag('event', 'page_view', {
+    page_title: title,
+    page_location: `${window.location.origin}${path}`,
+    page_path: path,
+    send_to: GA_MEASUREMENT_ID
+  });
+}
+
+function trackPosterClick(film) {
+  if (typeof window.gtag !== 'function' || !film) return;
+  window.gtag('event', 'select_content', {
+    content_type: 'film_poster',
+    item_id: film._slug,
+    item_name: film.title || '',
+    film_filter: (film.filter || '').trim(),
+    director: film.director || '',
+    send_to: GA_MEASUREMENT_ID
+  });
+}
+
+function startReviewSession(film) {
+  if (!film) return;
+  if (currentReviewSlug === film._slug) return;
+  currentReviewSlug = film._slug;
+  currentReviewTitle = film.title || '';
+  currentReviewEnterAt = Date.now();
+}
+
+function endReviewSession(reason) {
+  if (!currentReviewSlug || !currentReviewEnterAt) return;
+  const durationMs = Date.now() - currentReviewEnterAt;
+  const durationSeconds = Math.max(1, Math.round(durationMs / 1000));
+
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'review_read', {
+      item_id: currentReviewSlug,
+      item_name: currentReviewTitle,
+      duration_seconds: durationSeconds,
+      exit_reason: reason,
+      transport_type: 'beacon',
+      send_to: GA_MEASUREMENT_ID
+    });
+  }
+
+  currentReviewSlug = null;
+  currentReviewTitle = '';
+  currentReviewEnterAt = 0;
+}
+
+window.addEventListener('pagehide', () => {
+  endReviewSession('pagehide');
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    endReviewSession('hidden_tab');
+    return;
+  }
+
+  const slug = getFilmFromUrl();
+  const film = slug ? getFilmBySlug(slug) : null;
+  if (document.visibilityState === 'visible' && film) {
+    startReviewSession(film);
+  }
+});
 
 fetchFilms();
 </script>
