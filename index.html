@@ -789,10 +789,17 @@ function setFilter(filter, btn) {
   renderFilms();
 }
 
+function getFilmCountries(film) {
+  return String(film.country || '')
+    .split(/[;,/\n]+/)
+    .map(country => country.trim())
+    .filter(Boolean);
+}
+
 function getCountryOptions() {
   return [...new Set(allFilms
     .filter(film => (film.filter || '').trim() === 'From the World')
-    .map(film => (film.country || '').trim())
+    .flatMap(getFilmCountries)
     .filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
 }
@@ -853,10 +860,10 @@ function renderFilms() {
   let filtered = allFilms.filter(f => {
     const filmFilter = (f.filter || '').trim();
     const matchFilter = activeFilter === 'all' || filmFilter === activeFilter;
-    const filmCountry = (f.country || '').trim();
+    const filmCountries = getFilmCountries(f);
     const matchCountry = activeFilter !== 'From the World' ||
       activeCountry === 'all' ||
-      filmCountry === activeCountry;
+      filmCountries.includes(activeCountry);
     const matchSearch = !search ||
       (f.title || '').toLowerCase().includes(search) ||
       (f.director || '').toLowerCase().includes(search);
