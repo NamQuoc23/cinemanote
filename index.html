@@ -678,7 +678,7 @@
     <div class="country-filter hidden" id="countryFilter">
       <div class="country-select-wrap">
         <select class="country-select" id="countrySelect" aria-label="Lọc phim From the World theo quốc gia" onchange="setCountryFilter(this.value)">
-          <option value="all">Country: All countries</option>
+          <option value="all">All countries</option>
         </select>
       </div>
     </div>
@@ -817,8 +817,8 @@ function updateCountryOptions() {
   }
 
   select.innerHTML = [
-    '<option value="all">Country: All countries</option>',
-    ...countries.map(country => `<option value="${escapeHtml(country)}">Country: ${escapeHtml(country)}</option>`)
+    '<option value="all">All countries</option>',
+    ...countries.map(country => `<option value="${escapeHtml(country)}">${escapeHtml(country)}</option>`)
   ].join('');
   select.value = activeCountry;
 }
