@@ -136,6 +136,15 @@
     margin: 0 auto;
   }
 
+  .primary-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
   .filter-group {
     display: flex;
     flex-wrap: wrap;
@@ -184,6 +193,57 @@
 
   .search-input::placeholder { color: rgba(0, 0, 0, 0.45); }
   .search-input:focus { border-color: var(--ink); }
+
+  .country-filter {
+    width: min(100%, 340px);
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .country-filter.hidden {
+    display: none;
+  }
+
+  .country-select-wrap {
+    position: relative;
+  }
+
+  .country-select {
+    width: 100%;
+    min-height: 40px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    background: #ffffff;
+    border: 1px solid #d9d9d9;
+    border-radius: 0;
+    padding: 10px 42px 10px 14px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    transition: border-color 0.15s;
+  }
+
+  .country-select:hover,
+  .country-select:focus {
+    border-color: var(--ink);
+  }
+
+  .country-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    transform: translateY(-65%) rotate(45deg);
+    pointer-events: none;
+  }
 
   .count-label {
     font-family: var(--mono);
@@ -546,12 +606,26 @@
       padding-bottom: 0;
       width: calc(100vw - (var(--page-gutter) * 2));
       align-items: stretch;
+      gap: 12px;
+    }
+    .primary-controls {
+      gap: 12px;
+      align-items: stretch;
     }
     .filter-group {
       gap: 8px;
+      width: 100%;
     }
     .filter-btn {
       padding: 9px 12px;
+    }
+    .search-wrap,
+    .country-filter {
+      width: 100%;
+    }
+    .country-select,
+    .search-input {
+      min-height: 42px;
     }
     .films-wrap { padding-top: 36px; padding-bottom: 64px; }
     .film-grid {
@@ -590,14 +664,23 @@
 
   <!-- CONTROLS -->
   <div class="controls">
-    <div class="filter-group" id="filterGroup">
-      <button class="filter-btn active" type="button" data-filter="all" onclick="setFilter('all', this)">All</button>
-      <button class="filter-btn" type="button" data-filter="From Home" onclick="setFilter('From Home', this)">From Home</button>
-      <button class="filter-btn" type="button" data-filter="From the World" onclick="setFilter('From the World', this)">From the World</button>
-      <button class="filter-btn" type="button" data-filter="Notes" onclick="setFilter('Notes', this)">Notes</button>
+    <div class="primary-controls">
+      <div class="filter-group" id="filterGroup">
+        <button class="filter-btn active" type="button" data-filter="all" onclick="setFilter('all', this)">All</button>
+        <button class="filter-btn" type="button" data-filter="From Home" onclick="setFilter('From Home', this)">From Home</button>
+        <button class="filter-btn" type="button" data-filter="From the World" onclick="setFilter('From the World', this)">From the World</button>
+        <button class="filter-btn" type="button" data-filter="Notes" onclick="setFilter('Notes', this)">Notes</button>
+      </div>
+      <div class="search-wrap">
+        <input class="search-input" type="text" placeholder="Tìm phim, đạo diễn..." id="searchInput" oninput="renderFilms()">
+      </div>
     </div>
-    <div class="search-wrap">
-      <input class="search-input" type="text" placeholder="Tìm phim, đạo diễn..." id="searchInput" oninput="renderFilms()">
+    <div class="country-filter hidden" id="countryFilter">
+      <div class="country-select-wrap">
+        <select class="country-select" id="countrySelect" aria-label="Lọc phim From the World theo quốc gia" onchange="setCountryFilter(this.value)">
+          <option value="all">Country: All countries</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -627,6 +710,7 @@ const GA_MEASUREMENT_ID = 'G-MCGTDW2WCW';
 
 let allFilms = [];
 let activeFilter = 'all';
+let activeCountry = 'all';
 let isTransitioningView = false;
 let lastTrackedPath = '';
 let currentReviewSlug = null;
@@ -660,6 +744,7 @@ async function fetchFilms() {
 
     updateHeaderMeta();
     syncFilterButtons();
+    updateCountryOptions();
     renderRoute();
   } catch (e) {
     showState('error', 'Không thể tải dữ liệu. Hãy kiểm tra lại cài đặt chia sẻ của Google Sheet.');
@@ -695,8 +780,44 @@ function syncFilterButtons() {
 
 function setFilter(filter, btn) {
   activeFilter = filter;
+  if (activeFilter !== 'From the World') {
+    activeCountry = 'all';
+  }
   document.querySelectorAll('.filter-btn').forEach(button => button.classList.remove('active'));
   btn.classList.add('active');
+  updateCountryOptions();
+  renderFilms();
+}
+
+function getCountryOptions() {
+  return [...new Set(allFilms
+    .filter(film => (film.filter || '').trim() === 'From the World')
+    .map(film => (film.country || '').trim())
+    .filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function updateCountryOptions() {
+  const wrap = document.getElementById('countryFilter');
+  const select = document.getElementById('countrySelect');
+  const countries = getCountryOptions();
+  const shouldShow = activeFilter === 'From the World' && countries.length > 0;
+
+  wrap.classList.toggle('hidden', !shouldShow);
+
+  if (!countries.includes(activeCountry)) {
+    activeCountry = 'all';
+  }
+
+  select.innerHTML = [
+    '<option value="all">Country: All countries</option>',
+    ...countries.map(country => `<option value="${escapeHtml(country)}">Country: ${escapeHtml(country)}</option>`)
+  ].join('');
+  select.value = activeCountry;
+}
+
+function setCountryFilter(country) {
+  activeCountry = country || 'all';
   renderFilms();
 }
 
@@ -732,13 +853,21 @@ function renderFilms() {
   let filtered = allFilms.filter(f => {
     const filmFilter = (f.filter || '').trim();
     const matchFilter = activeFilter === 'all' || filmFilter === activeFilter;
+    const filmCountry = (f.country || '').trim();
+    const matchCountry = activeFilter !== 'From the World' ||
+      activeCountry === 'all' ||
+      filmCountry === activeCountry;
     const matchSearch = !search ||
       (f.title || '').toLowerCase().includes(search) ||
       (f.director || '').toLowerCase().includes(search);
-    return matchFilter && matchSearch;
+    return matchFilter && matchCountry && matchSearch;
   });
 
-  const sectionPrefix = activeFilter === 'all' ? 'Tất cả phim' : activeFilter;
+  const sectionPrefix = activeFilter === 'all'
+    ? 'Tất cả phim'
+    : activeFilter === 'From the World' && activeCountry !== 'all'
+      ? `${activeFilter} · ${activeCountry}`
+      : activeFilter;
   document.getElementById('sectionLabel').textContent = sectionPrefix + ' · ' + filtered.length;
 
   const grid = document.getElementById('filmGrid');
@@ -853,9 +982,24 @@ function formatReview(review) {
         const url = imageMatch[1];
         return `<figure class="detail-review-image"><img src="${url}" alt="Hình minh họa trong bài viết" loading="lazy"></figure>`;
       }
-      return `<p>${block.replace(/\n/g, '<br>')}</p>`;
+      return `<p>${formatReviewInline(block).replace(/\n/g, '<br>')}</p>`;
     })
     .join('');
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatReviewInline(text) {
+  return escapeHtml(text)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
 }
 
 window.addEventListener('popstate', renderRoute);
