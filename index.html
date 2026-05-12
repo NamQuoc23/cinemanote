@@ -102,7 +102,7 @@
 
   /* ===== HERO ===== */
   .hero {
-    padding: 92px 0 34px;
+    padding: 126px 0 38px;
     width: min(var(--content-width), calc(100vw - (var(--page-gutter) * 2)));
     margin: 0 auto;
   }
@@ -119,16 +119,6 @@
   .hero-title em {
     font-style: italic;
     color: rgba(0, 0, 0, 0.42);
-  }
-
-  .hero-sub {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    color: var(--ink);
-    line-height: 1.85;
-    max-width: 620px;
   }
 
   /* ===== CONTROLS ===== */
@@ -302,12 +292,6 @@
   /* ===== CARD ===== */
   .film-card {
     cursor: pointer;
-    opacity: var(--reveal-opacity, 0.24);
-    transform: translateY(var(--reveal-y, 26px));
-    transition:
-      opacity 0.14s linear,
-      transform 0.14s linear;
-    will-change: opacity, transform;
   }
 
   .film-card:hover .poster-img { transform: scale(1.03); }
@@ -625,7 +609,7 @@
       display: none;
     }
 
-    .hero { padding-top: 56px; padding-bottom: 30px; }
+    .hero { padding-top: 78px; padding-bottom: 30px; }
     .controls {
       padding-top: 8px;
       padding-bottom: 0;
@@ -640,6 +624,7 @@
     .filter-group {
       gap: 8px;
       width: 100%;
+      justify-content: space-between;
     }
     .filter-btn {
       padding: 9px 12px;
@@ -690,7 +675,6 @@
   <!-- HERO -->
   <section class="hero">
     <h1 class="hero-title">Some films stay<br><em>longer than the story.</em></h1>
-    <p class="hero-sub">Tuyển chọn những bộ phim mình đã xem, phân tích và trân trọng — ghi lại không phải để nhớ, mà để hiểu.</p>
   </section>
 
   <!-- CONTROLS -->
@@ -751,8 +735,6 @@ let lastTrackedPath = '';
 let currentReviewSlug = null;
 let currentReviewTitle = '';
 let currentReviewEnterAt = 0;
-let revealScrollBound = false;
-let revealFrame = null;
 
 // ===== FETCH =====
 async function fetchFilms() {
@@ -865,44 +847,6 @@ function setCountryFilter(country) {
   renderFilms();
 }
 
-function revealFilmCards() {
-  if (!revealScrollBound) {
-    revealScrollBound = true;
-    window.addEventListener('scroll', scheduleRevealUpdate, { passive: true });
-    window.addEventListener('resize', scheduleRevealUpdate);
-  }
-
-  updateFilmCardReveal();
-  scheduleRevealUpdate();
-}
-
-function scheduleRevealUpdate() {
-  if (revealFrame) return;
-  revealFrame = requestAnimationFrame(() => {
-    revealFrame = null;
-    updateFilmCardReveal();
-  });
-}
-
-function updateFilmCardReveal() {
-  const cards = document.querySelectorAll('.film-card');
-  const startLine = window.innerHeight * 1.04;
-  const endLine = window.innerHeight * 0.38;
-  const revealDistance = startLine - endLine;
-
-  cards.forEach(card => {
-    const rect = card.getBoundingClientRect();
-    const rawProgress = (startLine - rect.top) / revealDistance;
-    const progress = Math.min(1, Math.max(0, rawProgress));
-    const easedProgress = 1 - Math.pow(1 - progress, 2);
-    const opacity = 0.24 + easedProgress * 0.76;
-    const translateY = (1 - easedProgress) * 26;
-
-    card.style.setProperty('--reveal-opacity', opacity.toFixed(3));
-    card.style.setProperty('--reveal-y', `${translateY.toFixed(1)}px`);
-  });
-}
-
 function renderRoute() {
   if (isTransitioningView) return;
   const slug = getFilmFromUrl();
@@ -978,7 +922,6 @@ function renderFilms() {
       </div>
     </div>
   `).join('');
-  revealFilmCards();
 }
 
 function openFilm(slug) {
